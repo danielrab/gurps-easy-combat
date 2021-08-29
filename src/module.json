@@ -1,17 +1,11 @@
 {
   "name": "gurps-easy-combat",
-  "title": "gurps-easy-combat",
+  "title": "GURPS Easy Combat",
   "description": "",
   "version": "0.0.0",
-  "author": "",
-  "authors": [
-    {
-      "name": "",
-      "email": ""
-    }
-  ],
+  "author": "danielrab",
   "minimumCoreVersion": "0.8.8",
-  "compatibleCoreVersion": "0.8.8",
+  "compatibleCoreVersion": "0.8.9",
   "scripts": [],
   "esmodules": ["module/gurps-easy-combat.js"],
   "styles": ["styles/gurps-easy-combat.css"],
