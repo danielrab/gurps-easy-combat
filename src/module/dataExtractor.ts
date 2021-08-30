@@ -33,3 +33,7 @@ export function getBlocks(actor: Actor): Record<string, number> {
   }
   return blocks;
 }
+
+export function getDodge(actor: Actor): number {
+  return actor.data.data.currentdodge;
+}
