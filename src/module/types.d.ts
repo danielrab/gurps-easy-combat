@@ -57,22 +57,34 @@ interface Spell extends BaseSkill {
   difficulty: string;
   parentuuid: string;
 }
-interface MeleeAttack {
+interface Attack {
   name: string;
+  contains: Record<string, never>;
   notes: string;
   pageref: string;
-  contains: Record<string, never>;
   import: string;
   damage: string;
   st: string;
   mode: string;
   level: number;
+}
+interface MeleeAttack extends Attack {
   weight: string;
   techlevel: string;
   cost: string;
   reach: string;
   parry: string;
   block: string;
+}
+interface RangedAttack extends Attack {
+  acc: string;
+  ammo: string;
+  bulk: string;
+  legalityclass: string;
+  range: string;
+  rcl: string;
+  rof: string;
+  shots: string;
 }
 interface Advantage {
   name: string;
@@ -230,6 +242,7 @@ interface ActorDataPropertiesData {
     skin: string;
   };
   melee: Record<string, MeleeAttack>;
+  ranged: Record<string, RangedAttack>;
   spells: Record<string, Spell>;
   ads: Record<string, Advantage>;
   reactions: Record<string, Reaction>;
@@ -260,5 +273,6 @@ declare global {
     Actor: ActorDataProperties;
   }
 }
-export {};
 //#endregion
+type NestedDict<T> = Record<string, Record<string, T>>;
+export { MeleeAttack, RangedAttack, NestedDict };
