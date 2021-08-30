@@ -15,3 +15,21 @@ export function getAttacks(actor: Actor): { melee: NestedDict<MeleeAttack>; rang
   }
   return { melee: meleeByName, ranged: rangedByName };
 }
+
+export function getParries(actor: Actor): Record<string, number> {
+  const parries: Record<string, number> = {};
+  for (const attack of Object.values(actor.data.data.melee)) {
+    const parry: number = parseInt(attack.parry);
+    if (parry) parries[attack.name] = parry;
+  }
+  return parries;
+}
+
+export function getBlocks(actor: Actor): Record<string, number> {
+  const blocks: Record<string, number> = {};
+  for (const attack of Object.values(actor.data.data.melee)) {
+    const block: number = parseInt(attack.parry);
+    if (block) blocks[attack.name] = block; // Math.max takes care of multiple attacks per weapon.
+  }
+  return blocks;
+}
