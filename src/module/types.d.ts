@@ -57,7 +57,7 @@ interface Spell extends BaseSkill {
   difficulty: string;
   parentuuid: string;
 }
-interface Attack {
+export interface Attack {
   name: string;
   contains: Record<string, never>;
   notes: string;
@@ -262,6 +262,31 @@ interface ActorDataPropertiesData {
     othercost: number;
   };
 }
+interface GurpsRoll {
+  chatthing: string;
+  failure: boolean;
+  finaltarget: number;
+  isCritFailure: boolean;
+  isCritSuccess: boolean;
+  isDraggable: boolean;
+  loaded: boolean;
+  margin: number;
+  modifier: number;
+  optlabel: string;
+  origtarget: number;
+  otf: string;
+  prefix: string;
+  rolls: string;
+  rtotal: number;
+  seventeen: boolean;
+  targetmods: {
+    desc: string;
+    mod: string;
+    modint: number;
+    plus: boolean;
+  }[];
+  thing: string;
+}
 
 //#region registering
 interface ActorDataProperties {
@@ -269,10 +294,21 @@ interface ActorDataProperties {
   data: ActorDataPropertiesData;
 }
 declare global {
+  interface Actor {
+    updateManeuver: (maneuver?: string) => Promise<void>;
+  }
   interface DataConfig {
     Actor: ActorDataProperties;
   }
+  const GURPS: {
+    LastActor: Actor;
+    SetLastActor(actor: Actor): void;
+    gurpslink: (otf: string) => string;
+    executeOTF: (otf: string) => boolean;
+    performAction: (data: any, actor: Actor) => Promise<boolean>;
+    lastTargetedRoll: GurpsRoll;
+  };
 }
 //#endregion
 type NestedDict<T> = Record<string, Record<string, T>>;
-export { MeleeAttack, RangedAttack, NestedDict };
+export { MeleeAttack, RangedAttack, NestedDict, GurpsRoll };

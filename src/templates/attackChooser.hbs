@@ -1,0 +1,34 @@
+<div>
+  <h1>Melee</h1>
+  <div>
+    {{#each melee as |attack|}}
+      <div>
+        <div class="easy-combat-tooltip attack melee" index="{{@index}}">
+          {{attack.name}}{{#unless (isEmptyString attack.mode)}} - {{/unless}}{{attack.mode}}
+          <span class="easy-combat-tooltiptext">
+            {{attack.level}} to hit<br>
+            {{attack.damage}} damage<br>
+            reach: {{attack.reach}}
+          </span>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+  <h1>Ranged</h1>
+  <div>
+    {{#each ranged as |attack|}}
+      <div>
+        <div class="easy-combat-tooltip attack ranged" index="{{@index}}">
+          {{attack.name}}{{#unless (isEmptyString attack.mode)}} - {{/unless}}{{attack.mode}}
+          <span class="easy-combat-tooltiptext">
+            {{attack.level}} to hit<br>
+            {{attack.damage}} damage<br>
+            range: {{attack.range}}<br>
+            accuracy: {{attack.acc}}<br>
+            bulk: {{attack.bulk}}
+          </span>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
