@@ -20,7 +20,7 @@
   ],
   "socket": true,
   "url": "",
-  "manifest": "",
+  "manifest": "https://raw.githubusercontent.com/danielrab/gurps-easy-combat/master/src/module.json",
   "download": "https://host/path/to/0.0.0.zip",
   "license": "",
   "readme": "",
