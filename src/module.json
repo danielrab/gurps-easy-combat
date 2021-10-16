@@ -10,7 +10,12 @@
   "esmodules": ["module/gurps-easy-combat.js"],
   "styles": ["styles/gurps-easy-combat.css"],
   "packs": [],
-  "dependencies": [],
+  "dependencies": [
+    {
+      "name": "socketlib",
+      "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/v1.0.9/module.json"
+    }
+  ],
   "languages": [
     {
       "lang": "en",
@@ -26,6 +31,6 @@
   "readme": "",
   "bugs": "",
   "changelog": "",
-  "system": [],
+  "system": ["gurps"],
   "library": false
 }
