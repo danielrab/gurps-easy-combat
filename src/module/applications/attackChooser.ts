@@ -1,6 +1,7 @@
 import { makeAttack } from '../attackWorkflow.js';
 import { TEMPLATES_FOLDER } from '../setup/constants.js';
 import { getAttacks } from '../dataExtractor.js';
+import { MeleeAttack, RangedAttack } from '../types.js';
 
 function ensureTargets(targets: UserTargets) {
   if (targets.size === 0) {
@@ -27,10 +28,11 @@ export class AttackChooser extends Application {
         resizable: true,
       }),
     );
-    this.actor = actor || GURPS.LastActor || (game as Game).user?.character;
+    this.actor = actor || GURPS.LastActor || game.user?.character;
     if (!this.actor) ui.notifications?.warn('You must have a character selected');
+    throw 'no actor';
   }
-  getData() {
+  getData(): { melee: MeleeAttack[]; ranged: RangedAttack[] } {
     const { melee, ranged } = getAttacks(this.actor);
     return { melee, ranged };
   }
@@ -44,10 +46,16 @@ export class AttackChooser extends Application {
       }
     });
     html.find('.attack').on('click', async (event) => {
-      const targets = game.user!.targets;
+      if (!game.user) return;
+      const targets = game.user.targets;
       const mode = event.target.classList.contains('melee') ? 'melee' : 'ranged';
       if (!ensureTargets(targets)) return;
-      const attack = getAttacks(this.actor)[mode][parseInt($(event.target).attr('index')!)];
+      const index = $(event.target).attr('index');
+      if (index === undefined) {
+        ui.notifications?.error("can't find index attribute of clicked element");
+        return;
+      }
+      const attack = getAttacks(this.actor)[mode][parseInt(index)];
       makeAttack(this.actor, targets.values().next().value, attack, []);
     });
   }

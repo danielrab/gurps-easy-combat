@@ -3,6 +3,7 @@ import * as dataExtractor from './dataExtractor.js';
 import { openManeuverChooser } from './applications/maneuverChooser.js';
 import { AttackChooser } from './applications/attackChooser.js';
 import { registerHooks } from './setup/hooks.js';
+import { SockerLibSocket, SockerLib } from './types.js';
 
 const globals = {
   dataExtractor,
@@ -11,13 +12,13 @@ const globals = {
 };
 
 declare global {
-  const EasyCombat: typeof globals & { socket: any };
-  const socketlib: any;
+  const EasyCombat: typeof globals & { socket: SockerLibSocket };
+  const socketlib: SockerLib;
   interface Window {
     EasyCombat: typeof globals;
   }
   interface LenientGlobalVariableTypes {
-    game: never; // the type doesn't matter
+    game: Game;
   }
 }
 

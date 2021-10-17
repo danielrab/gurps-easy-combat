@@ -293,6 +293,13 @@ interface ActorDataProperties {
   type: 'character';
   data: ActorDataPropertiesData;
 }
+export interface SockerLib {
+  registerModule(mudeltName: string): SockerLibSocket;
+}
+export interface SockerLibSocket {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  register(alias: string, func: Function): void;
+}
 declare global {
   interface Actor {
     updateManeuver: (maneuver?: string) => Promise<void>;
@@ -303,9 +310,9 @@ declare global {
   const GURPS: {
     LastActor: Actor;
     SetLastActor(actor: Actor): void;
-    gurpslink: (otf: string) => string;
-    executeOTF: (otf: string) => boolean;
-    performAction: (data: any, actor: Actor) => Promise<boolean>;
+    gurpslink(otf: string): string;
+    executeOTF(otf: string): boolean;
+    performAction(data: unknown, actor: Actor): Promise<boolean>;
     lastTargetedRoll: GurpsRoll;
   };
 }
