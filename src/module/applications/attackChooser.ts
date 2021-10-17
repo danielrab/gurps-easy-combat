@@ -1,6 +1,6 @@
-import { makeAttack } from './attackWorkflow.js';
-import { TEMPLATES_FOLDER } from './constants.js';
-import { getAttacks } from './dataExtractor.js';
+import { makeAttack } from '../attackWorkflow.js';
+import { TEMPLATES_FOLDER } from '../setup/constants.js';
+import { getAttacks } from '../dataExtractor.js';
 
 function ensureTargets(targets: UserTargets) {
   if (targets.size === 0) {

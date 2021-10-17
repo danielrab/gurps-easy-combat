@@ -1,6 +1,6 @@
 import { registerSettings } from './settings.js';
 import { preloadTemplates } from './preloadTemplates.js';
-import { useDefence, closeDefenceDialog } from './attackWorkflow.js';
+import { useDefence, closeDefenceDialog } from '../attackWorkflow.js';
 import { MODULE_NAME } from './constants.js';
 
 export function registerHooks() {

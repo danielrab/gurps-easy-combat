@@ -1,4 +1,4 @@
-import { MODULE_NAME } from './constants.js';
+import { MODULE_NAME } from '../setup/constants.js';
 
 const maneuvers: {
   name: string;
