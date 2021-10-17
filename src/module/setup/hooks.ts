@@ -3,7 +3,7 @@ import { preloadTemplates } from './preloadTemplates.js';
 import { useDefence, closeDefenceDialog } from '../attackWorkflow.js';
 import { MODULE_NAME } from './constants.js';
 
-export function registerHooks() {
+export function registerHooks(): void {
   Hooks.once('socketlib.ready', () => {
     EasyCombat.socket = socketlib.registerModule(MODULE_NAME);
     EasyCombat.socket.register('useDefense', useDefence);
