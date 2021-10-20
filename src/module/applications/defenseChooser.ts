@@ -16,7 +16,7 @@ export class DefenceChooser extends Application {
     );
     this.actor = actor;
   }
-  getData() {
+  getData(): { dodge: number; parry: Record<string, number>; block: Record<string, number> } {
     return { dodge: getDodge(this.actor), parry: getParries(this.actor), block: getBlocks(this.actor) };
   }
 }

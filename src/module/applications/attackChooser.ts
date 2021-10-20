@@ -18,7 +18,7 @@ function ensureTargets(targets: UserTargets) {
 export class AttackChooser extends Application {
   actor: Actor;
 
-  constructor(actor?: Actor) {
+  constructor(actor: Actor) {
     super(
       mergeObject(Application.defaultOptions, {
         id: 'attack-chooser',
@@ -28,9 +28,8 @@ export class AttackChooser extends Application {
         resizable: true,
       }),
     );
-    this.actor = actor || GURPS.LastActor || game.user?.character;
+    this.actor = actor;
     if (!this.actor) ui.notifications?.warn('You must have a character selected');
-    throw 'no actor';
   }
   getData(): { melee: MeleeAttack[]; ranged: RangedAttack[] } {
     const { melee, ranged } = getAttacks(this.actor);

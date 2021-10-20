@@ -1,3 +1,5 @@
+import type { functionsToRegister } from './setup/hooks';
+
 interface EncumbranceLevel {
   key: string;
   level: number;
@@ -299,10 +301,26 @@ export interface SockerLib {
 export interface SockerLibSocket {
   // eslint-disable-next-line @typescript-eslint/ban-types
   register(alias: string, func: Function): void;
+  executeAsUser<T extends keyof typeof functionsToRegister>(
+    alias: T,
+    userId: string,
+    ...args: Parameters<typeof functionsToRegister[T]>
+  ): Promise<ReturnType<typeof functionsToRegister[T]>>;
+  executeForEveryone<T extends keyof typeof functionsToRegister>(
+    alias: T,
+    ...args: Parameters<typeof functionsToRegister[T]>
+  ): Promise<void>;
+}
+export interface Modifier {
+  mod: number;
+  desc: string;
+}
+interface ModifierBucket {
+  addModifier(mod: number, reason: string): void;
 }
 declare global {
   interface Actor {
-    updateManeuver: (maneuver?: string) => Promise<void>;
+    replaceManeuver: (maneuver?: string) => Promise<void>;
   }
   interface DataConfig {
     Actor: ActorDataProperties;
@@ -312,10 +330,24 @@ declare global {
     SetLastActor(actor: Actor): void;
     gurpslink(otf: string): string;
     executeOTF(otf: string): boolean;
-    performAction(data: unknown, actor: Actor): Promise<boolean>;
+    performAction(data: {
+      type: 'damage';
+      formula: string;
+      damagetype: string;
+      extdamagetype: string;
+    }): Promise<boolean>;
+    performAction(
+      data: {
+        type: 'attack';
+        isMelee: boolean;
+        isRanged: boolean;
+        name: string;
+      },
+      actor: Actor,
+    ): Promise<boolean>;
     lastTargetedRoll: GurpsRoll;
+    ModifierBucket: ModifierBucket;
   };
 }
 //#endregion
-type NestedDict<T> = Record<string, Record<string, T>>;
-export { MeleeAttack, RangedAttack, NestedDict, GurpsRoll };
+export { MeleeAttack, RangedAttack, GurpsRoll };

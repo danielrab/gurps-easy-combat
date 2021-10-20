@@ -1,5 +1,5 @@
 import { getBlocks, getDodge, getParries } from './dataExtractor';
-import { GurpsRoll, MeleeAttack, RangedAttack } from './types';
+import { GurpsRoll, MeleeAttack, Modifier, RangedAttack } from './types';
 
 const activeDefenceDialogs: Record<string, Dialog> = {};
 
@@ -21,12 +21,15 @@ export async function makeAttack(
   attacker: Actor,
   target: Token,
   attack: MeleeAttack | RangedAttack,
-  attackModifiers: { vallue: number; description: string }[] = [],
-  damageModifiers: { vallue: number; description: string }[] = [],
+  attackModifiers: Modifier[] = [],
+  damageModifiers: Modifier[] = [],
 ): Promise<void> {
-  GURPS.SetLastActor(attacker);
+  if (target.actor === null) {
+    ui.notifications?.error('target actor is null');
+    return;
+  }
   for (const modifier of attackModifiers) {
-    await GURPS.executeOTF(`${modifier.vallue} ${modifier.description}`);
+    GURPS.ModifierBucket.addModifier(modifier.mod, modifier.desc);
   }
   const type = 'reach' in attack ? 'melee' : 'ranged';
   const roll = await rollAttack(attacker, attack.name, attack.mode, type);
@@ -34,15 +37,18 @@ export async function makeAttack(
   if (!roll.isCritSuccess) {
     let defenceSuccess;
     try {
-      defenceSuccess = await requestDefense(target.actor!);
+      defenceSuccess = await requestDefense(target.actor);
     } catch (error) {
+      ui.notifications?.warn(String(error));
       defenceSuccess = false; // if all the dialogs are closed show the damage as if attack successful.
     }
     if (defenceSuccess) {
       return;
     }
   }
-  await rollDamage(attack.damage, target.actor!, damageModifiers);
+  const damageParts = attack.damage.split(' ');
+  const damage = { formula: damageParts[0], type: damageParts[1], extra: damageParts[2] };
+  await rollDamage(damage, target.actor, damageModifiers);
 }
 
 async function requestDefense(target: Actor) {
@@ -50,21 +56,34 @@ async function requestDefense(target: Actor) {
   const result = await Promise.any(
     game
       .users!.filter((user) => target.testUserPermission(user, 'OWNER'))
-      .map((user) => EasyCombat.socket.executeAsUser('useDefense', user.id, target.id, actionId)),
+      .map((user) => EasyCombat.socket.executeAsUser('useDefense', user.id!, target.id!, actionId)),
   );
   EasyCombat.socket.executeForEveryone('closeDefenceDialog', actionId);
   return result;
 }
 
-async function rollDamage(damage: string, target: Actor, modifiers: { vallue: number; description: string }[] = []) {
+async function rollDamage(
+  damage: { formula: string; type: string; extra: string },
+  target: Actor,
+  modifiers: Modifier[] = [],
+) {
   for (const modifier of modifiers) {
-    await GURPS.executeOTF(`${modifier.vallue} ${modifier.description}`);
+    GURPS.ModifierBucket.addModifier(modifier.mod, modifier.desc);
   }
-  await GURPS.executeOTF(damage);
+  await GURPS.performAction({
+    type: 'damage',
+    formula: damage.formula,
+    damagetype: damage.type,
+    extdamagetype: damage.extra,
+  });
 }
 
-export async function useDefence(actorId: string, actionId: string): Promise<boolean> {
-  const actor = game.actors!.get(actorId)!;
+export async function useDefense(actorId: string, actionId: string): Promise<boolean> {
+  if (game.actors === undefined) {
+    ui.notifications?.error('game not initialized');
+    throw 'game not initialized';
+  }
+  const actor = game.actors.get(actorId, { strict: true });
   console.log(getDodge(actor));
   console.log(getParries(actor));
   console.log(getBlocks(actor));

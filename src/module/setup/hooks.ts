@@ -1,13 +1,17 @@
 import { registerSettings } from './settings.js';
 import { preloadTemplates } from './preloadTemplates.js';
-import { useDefence, closeDefenceDialog } from '../attackWorkflow.js';
+import { useDefense, closeDefenceDialog } from '../attackWorkflow.js';
 import { MODULE_NAME } from './constants.js';
+import { ManeuverChooser } from '../applications/maneuverChooser.js';
 
+export const functionsToRegister = { useDefense, closeDefenceDialog } as const;
 export function registerHooks(): void {
   Hooks.once('socketlib.ready', () => {
     EasyCombat.socket = socketlib.registerModule(MODULE_NAME);
-    EasyCombat.socket.register('useDefense', useDefence);
-    EasyCombat.socket.register('closeDefenceDialog', closeDefenceDialog);
+    for (const [alias, func] of Object.entries(functionsToRegister)) {
+      console.log(alias, func);
+      EasyCombat.socket.register(alias, func);
+    }
   });
 
   // Initialize module
@@ -36,5 +40,12 @@ export function registerHooks(): void {
     // Do anything once the module is ready
   });
 
-  // Add any additional hooks if necessary
+  Hooks.on('updateCombat', (combat: Combat) => {
+    if (!combat.started) return;
+    if (combat.combatant.actor === null) {
+      ui.notifications?.error('current combatant has no actor');
+      return;
+    }
+    new ManeuverChooser(combat.combatant.actor).render(true);
+  });
 }

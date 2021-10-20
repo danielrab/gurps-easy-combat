@@ -1,6 +1,7 @@
+<div>choose maneuver for {{actor.name}}</div>
 <table cellpadding="0" cellspacing="0" align="center">
 {{#each maneuvers as |maneuver|}}
-  <tr class="manuever_choice" value="{{maneuver.internalName}}" name="{{maneuver.name}}" page="{{maneuver.page}}">
+  <tr class="manuever_choice" value="{{@key}}" name="{{maneuver.name}}" page="{{maneuver.page}}">
     <td>{{maneuver.name}}</td>
     <td>{{maneuver.tooltip}}</td>
   </tr>
