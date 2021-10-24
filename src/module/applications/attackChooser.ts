@@ -2,6 +2,7 @@ import { makeAttack } from '../attackWorkflow.js';
 import { TEMPLATES_FOLDER } from '../setup/constants.js';
 import { getAttacks } from '../dataExtractor.js';
 import { MeleeAttack, RangedAttack } from '../types.js';
+import BaseActorController from './abstract/BaseActorController.js';
 
 function ensureTargets(targets: UserTargets) {
   if (targets.size === 0) {
@@ -15,21 +16,13 @@ function ensureTargets(targets: UserTargets) {
   return true;
 }
 
-export class AttackChooser extends Application {
-  actor: Actor;
-
+export class AttackChooser extends BaseActorController {
   constructor(actor: Actor) {
-    super(
-      mergeObject(Application.defaultOptions, {
-        id: 'attack-chooser',
-        title: 'Attack Chooser',
-        template: `${TEMPLATES_FOLDER}/attackChooser.hbs`,
-        width: 600,
-        resizable: true,
-      }),
-    );
-    this.actor = actor;
-    if (!this.actor) ui.notifications?.warn('You must have a character selected');
+    super(actor, {
+      title: 'Attack Chooser',
+      template: `${TEMPLATES_FOLDER}/attackChooser.hbs`,
+      width: 600,
+    });
   }
   getData(): { melee: MeleeAttack[]; ranged: RangedAttack[] } {
     const { melee, ranged } = getAttacks(this.actor);
@@ -49,12 +42,12 @@ export class AttackChooser extends Application {
       const targets = game.user.targets;
       const mode = event.target.classList.contains('melee') ? 'melee' : 'ranged';
       if (!ensureTargets(targets)) return;
-      const index = $(event.target).attr('index');
-      if (index === undefined) {
+      const indexString = $(event.target).attr('index');
+      if (!indexString) {
         ui.notifications?.error("can't find index attribute of clicked element");
         return;
       }
-      const attack = getAttacks(this.actor)[mode][parseInt(index)];
+      const attack = getAttacks(this.actor)[mode][parseInt(indexString)];
       makeAttack(this.actor, targets.values().next().value, attack, []);
     });
   }
