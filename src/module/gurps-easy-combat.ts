@@ -1,10 +1,10 @@
 // Import TypeScript modules
 import * as dataExtractor from './dataExtractor.js';
-import { ManeuverChooser } from './applications/maneuverChooser.js';
-import { AttackChooser } from './applications/attackChooser.js';
+import ManeuverChooser from './applications/maneuverChooser.js';
+import AttackChooser from './applications/attackChooser.js';
 import { registerHooks } from './setup/hooks.js';
 import { SockerLibSocket, SockerLib } from './types.js';
-import { DefenceChooser } from './applications/defenseChooser.js';
+import DefenceChooser from './applications/defenseChooser.js';
 
 const globals = {
   dataExtractor,
