@@ -21,3 +21,8 @@
 .easy-combat-tooltip:hover .easy-combat-tooltiptext {
   visibility: visible;
 }
+
+.manuever_choice:hover {
+  background: #000;
+  color: #fff;
+}
