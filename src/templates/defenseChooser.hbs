@@ -1,5 +1,15 @@
 <div>
-  <div>dodge {{dodge}}</div>
-  <h1>parry</h1>
-  <h1>block</h1>
+  <div id="dodge">dodge: {{dodge}}</div>
+  <h2>parry</h2>
+  <div id="parry">
+    {{#each parry as |parryValue|}}
+      <div>{{@key}}: {{parryValue}}</div>
+    {{/each}}
+  </div>
+  <h2>block</h2>
+  <div id="block">
+    {{#each block as |blockValue|}}
+      <div>{{@key}}: {{blockValue}}</div>
+    {{/each}}
+  </div>
 </div>
