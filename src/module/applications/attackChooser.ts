@@ -1,32 +1,28 @@
 import { makeAttack } from '../attackWorkflow.js';
 import { TEMPLATES_FOLDER } from '../setup/constants.js';
 import { getAttacks } from '../dataExtractor.js';
-import { MeleeAttack, RangedAttack } from '../types.js';
+import { MeleeAttack, Modifier, RangedAttack } from '../types.js';
 import BaseActorController from './abstract/BaseActorController.js';
 
-function ensureTargets(targets: UserTargets) {
-  if (targets.size === 0) {
-    ui.notifications?.warn('you must select a target');
-    return false;
-  }
-  if (targets.size > 1) {
-    ui.notifications?.warn('you must select only one target');
-    return false;
-  }
-  return true;
+interface AttackData {
+  isMoving: boolean;
 }
 
-export class AttackChooser extends BaseActorController {
-  constructor(actor: Actor) {
-    super(actor, {
-      title: 'Attack Chooser',
+export default class AttackChooser extends BaseActorController {
+  data: AttackData;
+
+  constructor(actor: Actor, data: AttackData, options: Partial<Application.Options>) {
+    super('AttackChooser', actor, {
+      title: `Attack Chooser - ${actor.name}`,
       template: `${TEMPLATES_FOLDER}/attackChooser.hbs`,
       width: 600,
+      ...options,
     });
+    this.data = data;
   }
-  getData(): { melee: MeleeAttack[]; ranged: RangedAttack[] } {
+  getData(): { melee: MeleeAttack[]; ranged: RangedAttack[]; data: AttackData } {
     const { melee, ranged } = getAttacks(this.actor);
-    return { melee, ranged };
+    return { melee, ranged, data: this.data };
   }
   activateListeners(html: JQuery): void {
     const applicationBox = html[0].getBoundingClientRect();
@@ -37,18 +33,45 @@ export class AttackChooser extends BaseActorController {
         $(e).css({ top: applicationBox.bottom - tooltipBox.bottom }); // the resulting number is negarive, moving the tooltip up
       }
     });
-    html.find('.attack').on('click', async (event) => {
+    html.on('click', '.attack', async (event) => {
       if (!game.user) return;
       const targets = game.user.targets;
       const mode = event.target.classList.contains('melee') ? 'melee' : 'ranged';
-      if (!ensureTargets(targets)) return;
+      if (!this.ensureTargets(targets)) return;
       const indexString = $(event.target).attr('index');
       if (!indexString) {
         ui.notifications?.error("can't find index attribute of clicked element");
         return;
       }
       const attack = getAttacks(this.actor)[mode][parseInt(indexString)];
-      makeAttack(this.actor, targets.values().next().value, attack, []);
+      const attackModifiers: Modifier[] = [];
+      const damageModifiers: Modifier[] = [];
+      const defenseModifiers: Modifier[] = [];
+      const isMoving = html.find('#is_moving').is(':checked');
+      if (isMoving && mode === 'melee') {
+        attackModifiers.push({ mod: -4, desc: 'Move and Attack *Max:9' });
+      }
+      if (isMoving && mode === 'ranged') {
+        const bulkStr = (attack as RangedAttack).bulk;
+        const bulk = bulkStr === '' ? 0 : parseInt(bulkStr);
+        attackModifiers.push({ mod: Math.min(-2, bulk), desc: 'Move and Attack' });
+      }
+      makeAttack(this.actor, targets.values().next().value, attack, attackModifiers, damageModifiers, defenseModifiers);
     });
+    html.on('click', '#is_moving', (event) => {
+      this.data.isMoving = event.target.checked;
+    });
+  }
+
+  ensureTargets(targets: UserTargets): boolean {
+    if (targets.size === 0) {
+      ui.notifications?.warn('you must select a target');
+      return false;
+    }
+    if (targets.size > 1) {
+      ui.notifications?.warn('you must select only one target');
+      return false;
+    }
+    return true;
   }
 }
