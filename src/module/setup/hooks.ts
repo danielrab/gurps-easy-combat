@@ -1,13 +1,15 @@
 import { registerSettings } from './settings.js';
 import { preloadTemplates } from './preloadTemplates.js';
-import { useDefense, closeDefenceDialog } from '../attackWorkflow.js';
 import { MODULE_NAME } from './constants.js';
-import { ManeuverChooser } from '../applications/maneuverChooser.js';
+import ManeuverChooser from '../applications/maneuverChooser.js';
+import BaseActorController from '../applications/abstract/BaseActorController.js';
+import DefenseChooser from '../applications/defenseChooser.js';
+import { highestPriorityUsers } from '../util.js';
+import AttackChooser from '../applications/attackChooser.js';
 
 export const functionsToRegister = {
-  useDefense,
-  closeDefenceDialog,
-  closeManueverChooser: (actorId: string | null) => ManeuverChooser.closeIfActor(actorId),
+  attemptDefense: DefenseChooser.attemptDefense.bind(DefenseChooser),
+  closeController: BaseActorController.closeById.bind(BaseActorController),
 } as const;
 export function registerHooks(): void {
   Hooks.once('socketlib.ready', () => {
@@ -44,7 +46,7 @@ export function registerHooks(): void {
     // Do anything once the module is ready
   });
 
-  Hooks.on('updateCombat', (combat: Combat) => {
+  Hooks.on('updateCombat', async (combat: Combat) => {
     if (!combat.started) return;
     const actor = combat.combatant.actor;
     if (!actor) {
@@ -55,8 +57,10 @@ export function registerHooks(): void {
       ui.notifications?.error('game not initialized');
       throw new Error('game not initialized');
     }
-    if (actor.testUserPermission(game.user, 'OWNER') && game.settings.get(MODULE_NAME, 'maneuver-chooser-on-turn')) {
-      ManeuverChooser.show(actor);
+    await ManeuverChooser.closeAll();
+    await AttackChooser.closeAll();
+    if (highestPriorityUsers(actor).includes(game.user) && game.settings.get(MODULE_NAME, 'maneuver-chooser-on-turn')) {
+      new ManeuverChooser(actor).render(true);
     }
   });
 }
