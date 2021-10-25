@@ -345,6 +345,14 @@ declare global {
       },
       actor: Actor,
     ): Promise<boolean>;
+    performAction(
+      data: {
+        orig: 'Dodge';
+        path: 'currentdodge';
+        type: 'attribute';
+      },
+      actor: Actor,
+    ): Promise<boolean>;
     lastTargetedRoll: GurpsRoll;
     ModifierBucket: ModifierBucket;
   };
