@@ -212,4 +212,5 @@ exports.build = gulp.series(clean, execBuild);
 exports.watch = buildWatch;
 exports.clean = clean;
 exports.link = linkUserData;
-exports.bumpVersion = gulp.series(bumpVersion, exports.build);
+exports.bumpVersion = bumpVersion;
+exports.newRelease = gulp.series(bumpVersion, exports.build);
