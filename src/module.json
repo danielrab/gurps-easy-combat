@@ -26,7 +26,7 @@
   "socket": true,
   "url": "",
   "manifest": "https://raw.githubusercontent.com/danielrab/gurps-easy-combat/master/src/module.json",
-  "download": "https://github.com/danielrab/gurps-easy-combat/releases/download/release/dist.zip",
+  "download": "https://github.com/danielrab/gurps-easy-combat/releases/latest/download/dist.zip",
   "license": "",
   "readme": "",
   "bugs": "",
