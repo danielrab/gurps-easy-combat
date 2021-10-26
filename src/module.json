@@ -24,11 +24,11 @@
     }
   ],
   "socket": true,
-  "url": "",
+  "url": "https://github.com/danielrab/gurps-easy-combat",
   "manifest": "https://raw.githubusercontent.com/danielrab/gurps-easy-combat/master/src/module.json",
   "download": "https://github.com/danielrab/gurps-easy-combat/releases/latest/download/dist.zip",
   "license": "",
-  "readme": "",
+  "readme": "https://github.com/danielrab/gurps-easy-combat/blob/master/README.md",
   "bugs": "",
   "changelog": "",
   "system": ["gurps"],
