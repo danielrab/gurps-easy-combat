@@ -18,7 +18,6 @@ const stylesDirectory = `${sourceDirectory}/styles`;
 const stylesExtension = 'css';
 const sourceFileExtension = 'ts';
 const staticFiles = ['assets', 'fonts', 'lang', 'packs', 'templates', 'module.json'];
-const getDownloadURL = (version) => `https://host/path/to/${version}.zip`;
 
 /********************/
 /*      BUILD       */
@@ -199,7 +198,6 @@ function bumpVersion(cb) {
     }
 
     manifest.file.version = targetVersion;
-    manifest.file.download = getDownloadURL(targetVersion);
     fs.writeJSONSync(`${sourceDirectory}/${manifest.name}`, manifest.file, { spaces: 2 });
 
     return cb();
