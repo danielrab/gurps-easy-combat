@@ -42,6 +42,40 @@ export default class DefenseChooser extends BaseActorController {
       this.data.resolve(result);
       this.close();
     });
+    html.on('click', '.parryRow', (event) => {
+      const weapon = $(event.currentTarget).attr('weapon');
+      if (!weapon) {
+        ui.notifications?.error('no weapon attribute on clicked element');
+        return;
+      }
+      const result = GURPS.performAction(
+        {
+          isMelee: true,
+          name: weapon,
+          type: 'weapon-parry',
+        },
+        this.actor,
+      );
+      this.data.resolve(result);
+      this.close();
+    });
+    html.on('click', '.blockRow', (event) => {
+      const weapon = $(event.currentTarget).attr('weapon');
+      if (!weapon) {
+        ui.notifications?.error('no weapon attribute on clicked element');
+        return;
+      }
+      const result = GURPS.performAction(
+        {
+          isMelee: true,
+          name: weapon,
+          type: 'weapon-block',
+        },
+        this.actor,
+      );
+      this.data.resolve(result);
+      this.close();
+    });
   }
   static async attemptDefense(actorId: string, modifiers: Modifier[]): Promise<boolean> {
     const actor = game.actors?.get(actorId);

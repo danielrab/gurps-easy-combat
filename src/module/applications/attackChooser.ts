@@ -36,9 +36,10 @@ export default class AttackChooser extends BaseActorController {
     html.on('click', '.attack', async (event) => {
       if (!game.user) return;
       const targets = game.user.targets;
-      const mode = event.target.classList.contains('melee') ? 'melee' : 'ranged';
+      const element = event.currentTarget;
+      const mode = element.classList.contains('melee') ? 'melee' : 'ranged';
       if (!this.ensureTargets(targets)) return;
-      const indexString = $(event.target).attr('index');
+      const indexString = $(element).attr('index');
       if (!indexString) {
         ui.notifications?.error("can't find index attribute of clicked element");
         return;

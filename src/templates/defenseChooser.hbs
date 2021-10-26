@@ -1,15 +1,32 @@
 <div>
-  <div id="dodge">dodge: {{dodge}}</div>
-  <h2>parry</h2>
-  <div id="parry">
+  <table>
+    <tr class="clickable" id="dodge">
+      <td>dodge</td>
+      <td>{{dodge}}</td>
+    </tr>
+  </table>
+  <table>
+    <tr class="header">
+      <td>parry with</td>
+      <td>level</td>
+    </tr>
     {{#each parry as |parryValue|}}
-      <div>{{@key}}: {{parryValue}}</div>
+      <tr class="clickable parryRow" weapon="{{@key}}">
+        <td>{{@key}}</td>
+        <td>{{parryValue}}</td>
+      </tr>
     {{/each}}
-  </div>
-  <h2>block</h2>
-  <div id="block">
+  </table>
+  <table>
+    <tr class="header">
+      <td>block with</td>
+      <td>level</td>
+    </tr>
     {{#each block as |blockValue|}}
-      <div>{{@key}}: {{blockValue}}</div>
+      <tr class="clickable blockRow" weapon="{{@key}}">
+        <td>{{@key}}</td>
+        <td>{{blockValue}}</td>
+      </tr>
     {{/each}}
-  </div>
+  </table>
 </div>

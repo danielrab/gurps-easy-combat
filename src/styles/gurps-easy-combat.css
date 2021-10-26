@@ -22,7 +22,7 @@
   visibility: visible;
 }
 
-.manuever_choice:hover {
-  background: #000;
+.clickable:hover {
+  background: #333;
   color: #fff;
 }

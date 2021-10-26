@@ -353,6 +353,22 @@ declare global {
       },
       actor: Actor,
     ): Promise<boolean>;
+    performAction(
+      data: {
+        isMelee: true;
+        name: string;
+        type: 'weapon-block';
+      },
+      actor: Actor,
+    ): Promise<boolean>;
+    performAction(
+      data: {
+        isMelee: true;
+        name: string;
+        type: 'weapon-parry';
+      },
+      actor: Actor,
+    ): Promise<boolean>;
     lastTargetedRoll: GurpsRoll;
     ModifierBucket: ModifierBucket;
   };
