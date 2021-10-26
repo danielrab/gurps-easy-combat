@@ -21,6 +21,9 @@ foundryconfig.json
 # Distribution files
 dist
 
+# Release files
+release
+
 # ESLint
 .eslintcache
 

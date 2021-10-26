@@ -6,6 +6,7 @@ const gulp = require('gulp');
 const path = require('path');
 const rollupConfig = require('./rollup.config');
 const semver = require('semver');
+const zip = require('gulp-zip');
 
 /********************/
 /*  CONFIGURATION   */
@@ -206,6 +207,13 @@ function bumpVersion(cb) {
   }
 }
 
+/**
+ * zip dist folder preparing for release
+ */
+function zipRelease() {
+  return gulp.src('dist/**').pipe(zip('dist.zip')).pipe(gulp.dest('release'));
+}
+
 const execBuild = gulp.parallel(buildCode, buildStyles, copyFiles);
 
 exports.build = gulp.series(clean, execBuild);
@@ -213,4 +221,5 @@ exports.watch = buildWatch;
 exports.clean = clean;
 exports.link = linkUserData;
 exports.bumpVersion = bumpVersion;
-exports.newRelease = gulp.series(bumpVersion, exports.build);
+exports.zipRelease = zipRelease;
+exports.newRelease = gulp.series(bumpVersion, exports.build, zipRelease);
