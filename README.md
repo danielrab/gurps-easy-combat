@@ -1,17 +1,16 @@
 # GURPS Easy Combat
 
-## Goal: automate prts of combat in GURPS to make it go smoother.
+## Goal: the module aims to streamline combat for the in the GURPS system by providing popups to choose maneuvers, attacks, and defenses, and more.
 
 ## Dependencies:
 - socketlib
 
 ## implemented features:
-- attack chooser prototype
-- attack-defence-damage flow
+- maneuver selector
+- attack selector
+- defense selector
 
 ## To Do list:
-- maneuver selector
-- defense chooser
 - better attack chooser
 - automatic range penalty
 - readied weapon tracker
