@@ -1,4 +1,4 @@
-import { MODULE_NAME } from '../setup/constants.js';
+import { MODULE_NAME } from '../util/constants.js';
 import BaseActorController from './abstract/BaseActorController.js';
 import AttackChooser from './attackChooser.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -63,12 +63,12 @@ const maneuversInfo: Record<string, ManeuverInfo> = {
   attack: {
     tooltip: 'unarmed or with a weapon',
     page: 'B:365',
-    callback: (actor: Actor) => new AttackChooser(actor, { isMoving: false }, {}).render(true),
+    callback: (actor: Actor) => new AttackChooser(actor, { isMoving: false }).render(true),
   },
   move_and_attack: {
     tooltip: 'Move and attack at a penalty',
     page: 'B:365',
-    callback: (actor: Actor) => new AttackChooser(actor, { isMoving: true }, {}).render(true),
+    callback: (actor: Actor) => new AttackChooser(actor, { isMoving: true }).render(true),
   },
   feint: {
     tooltip: 'Fake a melee attack',
@@ -114,12 +114,10 @@ function getManeuversData(): Record<string, Maneuver> {
 export default class ManeuverChooser extends BaseActorController {
   static instance: ManeuverChooser;
 
-  constructor(actor: Actor, options?: Partial<Application.Options>) {
+  constructor(actor: Actor) {
     super('ManeuverChooser', actor, {
       title: `Maneuver Chooser - ${actor.name}`,
       template: `modules/${MODULE_NAME}/templates/maneuverChooser.hbs`,
-      width: 600,
-      ...options,
     });
     ManeuverChooser.instance = this;
   }

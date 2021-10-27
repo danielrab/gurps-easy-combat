@@ -1,7 +1,7 @@
-import { TEMPLATES_FOLDER } from '../setup/constants';
+import { TEMPLATES_FOLDER } from '../util/constants';
 import { getBlocks, getDodge, getParries } from '../dataExtractor';
 import BaseActorController from './abstract/BaseActorController';
-import { highestPriorityUsers, isDefined, smartRace } from '../util';
+import { highestPriorityUsers, isDefined, smartRace } from '../util/miscellaneous';
 import { Modifier } from '../types';
 
 interface DefenseData {
@@ -13,12 +13,10 @@ interface DefenseData {
 export default class DefenseChooser extends BaseActorController {
   data: DefenseData;
 
-  constructor(actor: Actor, data: DefenseData, options?: Partial<Application.Options>) {
+  constructor(actor: Actor, data: DefenseData) {
     super('DefenseChooser', actor, {
       title: `Defense Chooser - ${actor.name}`,
       template: `${TEMPLATES_FOLDER}/defenseChooser.hbs`,
-      width: 600,
-      ...options,
     });
     this.data = data;
   }
@@ -83,7 +81,7 @@ export default class DefenseChooser extends BaseActorController {
       throw new Error(`can't find actor with id ${actorId}`);
     }
     const promise = new Promise<boolean>((resolve, reject) => {
-      const instance = new this(actor, { resolve, reject, modifiers });
+      const instance = new DefenseChooser(actor, { resolve, reject, modifiers });
       instance.render(true);
     });
     console.log(promise);

@@ -1,4 +1,4 @@
-import { TEMPLATES_FOLDER } from '../../setup/constants';
+import { TEMPLATES_FOLDER } from '../../util/constants';
 import BaseActorController from '../abstract/BaseActorController';
 
 export default class Feint extends BaseActorController {

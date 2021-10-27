@@ -1,5 +1,3 @@
-import type { functionsToRegister } from './setup/hooks';
-
 interface EncumbranceLevel {
   key: string;
   level: number;
@@ -70,7 +68,7 @@ export interface Attack {
   mode: string;
   level: number;
 }
-interface MeleeAttack extends Attack {
+export interface MeleeAttack extends Attack {
   weight: string;
   techlevel: string;
   cost: string;
@@ -78,7 +76,7 @@ interface MeleeAttack extends Attack {
   parry: string;
   block: string;
 }
-interface RangedAttack extends Attack {
+export interface RangedAttack extends Attack {
   acc: string;
   ammo: string;
   bulk: string;
@@ -264,7 +262,7 @@ interface ActorDataPropertiesData {
     othercost: number;
   };
 }
-interface GurpsRoll {
+export interface GurpsRoll {
   chatthing: string;
   failure: boolean;
   finaltarget: number;
@@ -294,22 +292,6 @@ interface GurpsRoll {
 interface ActorDataProperties {
   type: 'character';
   data: ActorDataPropertiesData;
-}
-export interface SockerLib {
-  registerModule(mudeltName: string): SockerLibSocket;
-}
-export interface SockerLibSocket {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  register(alias: string, func: Function): void;
-  executeAsUser<T extends keyof typeof functionsToRegister>(
-    alias: T,
-    userId: string,
-    ...args: Parameters<typeof functionsToRegister[T]>
-  ): Promise<ReturnType<typeof functionsToRegister[T]>>;
-  executeForEveryone<T extends keyof typeof functionsToRegister>(
-    alias: T,
-    ...args: Parameters<typeof functionsToRegister[T]>
-  ): Promise<void>;
 }
 export interface Modifier {
   mod: number;
@@ -374,4 +356,3 @@ declare global {
   };
 }
 //#endregion
-export { MeleeAttack, RangedAttack, GurpsRoll };

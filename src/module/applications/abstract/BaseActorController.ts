@@ -5,7 +5,7 @@ export default class BaseActorController extends Application {
 
   constructor(appName: string, actor: Actor, options: Partial<Application.Options>) {
     const id = `${appName}-${actor.id}`;
-    super(mergeObject(Application.defaultOptions, { resizable: true, id, ...options }));
+    super(mergeObject(Application.defaultOptions, { resizable: true, width: 600, id, ...options }));
     this.actor = actor;
     if (!this.actor) {
       throw new Error('no actor');

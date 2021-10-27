@@ -1,5 +1,5 @@
 import { makeAttack } from '../attackWorkflow.js';
-import { TEMPLATES_FOLDER } from '../setup/constants.js';
+import { TEMPLATES_FOLDER } from '../util/constants.js';
 import { getAttacks } from '../dataExtractor.js';
 import { MeleeAttack, Modifier, RangedAttack } from '../types.js';
 import BaseActorController from './abstract/BaseActorController.js';
@@ -11,12 +11,10 @@ interface AttackData {
 export default class AttackChooser extends BaseActorController {
   data: AttackData;
 
-  constructor(actor: Actor, data: AttackData, options: Partial<Application.Options>) {
+  constructor(actor: Actor, data: AttackData) {
     super('AttackChooser', actor, {
       title: `Attack Chooser - ${actor.name}`,
       template: `${TEMPLATES_FOLDER}/attackChooser.hbs`,
-      width: 600,
-      ...options,
     });
     this.data = data;
   }

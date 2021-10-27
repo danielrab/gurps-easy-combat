@@ -51,10 +51,15 @@ function getPriority(user: User, actor: Actor): number {
   return priority;
 }
 
-export function highestPriorityUsers(actor: Actor): User[] {
-  if (!game.users) {
-    throw new Error('game not initialized');
+export function ensureDefined<T>(value: T | undefined | null, message: string): asserts value is T {
+  if (value === undefined || value === null) {
+    ui.notifications?.error(message);
+    throw new Error(message);
   }
+}
+
+export function highestPriorityUsers(actor: Actor): User[] {
+  ensureDefined(game.users, 'game not initialized');
   const priorities = new Map(game.users.map((user) => [user, getPriority(user, actor)]));
   const maxPriority = Math.max(...priorities.values());
   return game.users.filter((user) => priorities.get(user) === maxPriority);
