@@ -1,14 +1,3 @@
 <div>
-  <table>
-    <tr class="header">
-      <td>Maneuver</td>
-      <td>Description</td>
-    </tr>
-  {{#each maneuvers as |maneuver|}}
-    <tr class="manuever_choice clickable" value="{{@key}}" name="{{maneuver.name}}" page="{{maneuver.page}}">
-      <td>{{maneuver.name}}</td>
-      <td>{{maneuver.tooltip}}</td>
-    </tr>
-  {{/each}}
-  </table>
+  {{> choiceTable}}
 </div>

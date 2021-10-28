@@ -1,4 +1,6 @@
+import { ChooserData } from '../types.js';
 import { MODULE_NAME } from '../util/constants.js';
+import { activateChooser } from '../util/miscellaneous.js';
 import BaseActorController from './abstract/BaseActorController.js';
 import AttackChooser from './attackChooser.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -14,6 +16,7 @@ interface ManeuverInfo {
 interface Maneuver extends ManeuverInfo {
   name: string;
   canAttack: boolean;
+  key: string;
 }
 interface GurpsManeuver {
   changes: {
@@ -96,19 +99,16 @@ const maneuversInfo: Record<string, ManeuverInfo> = {
   },
 };
 
-function getManeuversData(): Record<string, Maneuver> {
+function getManeuversData(): Maneuver[] {
   const gurpsManeuvers: Record<string, GurpsManeuver> = Maneuvers.getAllData();
-  return Object.fromEntries(
-    Object.entries(maneuversInfo).map(([key, maneuverInfo]: [string, ManeuverInfo]) => {
-      const maneuver = gurpsManeuvers[key];
-      const maneuverData: Maneuver = {
-        ...maneuverInfo,
-        name: game.i18n.localize(maneuver.label),
-        canAttack: key.includes('attack'),
-      };
-      return [key, maneuverData];
-    }),
-  );
+  return Object.entries(maneuversInfo).map(([key, maneuverInfo]: [string, ManeuverInfo]) => {
+    return {
+      ...maneuverInfo,
+      name: game.i18n.localize(gurpsManeuvers[key].label),
+      canAttack: key.includes('attack'),
+      key,
+    };
+  });
 }
 
 export default class ManeuverChooser extends BaseActorController {
@@ -121,22 +121,19 @@ export default class ManeuverChooser extends BaseActorController {
     });
     ManeuverChooser.instance = this;
   }
-  getData(): { maneuvers: Record<string, Maneuver>; actor: Actor } {
-    return { maneuvers: getManeuversData(), actor: this.actor };
+  getData(): ChooserData<['Maneuver', 'Description']> {
+    const maneuversDescriptions = getManeuversData().map((maneuver) => ({
+      Maneuver: maneuver.name,
+      Description: maneuver.tooltip,
+    }));
+    return { items: maneuversDescriptions, headers: ['Maneuver', 'Description'], id: 'manuever_choice' };
   }
   activateListeners(html: JQuery): void {
-    super.activateListeners(html);
-    html.find('.manuever_choice').on('click', (event) => {
-      const element = $(event.currentTarget);
-      const maneuverName = element.attr('value');
-      if (!maneuverName) {
-        ui.notifications?.error('no value on clicked element');
-        return;
-      }
-      const maneuver = getManeuversData()[maneuverName];
-      this.actor.replaceManeuver(maneuverName);
+    activateChooser(html, 'manuever_choice', (index) => {
+      const maneuver = getManeuversData()[index];
+      this.actor.replaceManeuver(maneuver.key);
       ChatMessage.create({
-        content: `${this.actor.name} uses the "${element.attr('name')}" maneuver [PDF:${element.attr('page')}]`,
+        content: `${this.actor.name} uses the "${maneuver.name}" maneuver [PDF:${maneuver.page}]`,
       });
       this.closeForEveryone();
       maneuver.callback?.(this.actor);

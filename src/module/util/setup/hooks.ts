@@ -1,5 +1,5 @@
 import { registerSettings } from './settings.js';
-import { registerHelpers } from './handlebars.js';
+import { registerHelpers, registerPartials } from './handlebars.js';
 import { MODULE_NAME } from '../constants.js';
 import ManeuverChooser from '../../applications/maneuverChooser.js';
 import { ensureDefined, highestPriorityUsers } from '../miscellaneous.js';
@@ -16,8 +16,9 @@ export function registerHooks(): void {
     // Register custom module settings
     registerSettings();
 
-    // register Handlebars helpers
+    // register Handlebars helpers and partials
     registerHelpers();
+    await registerPartials();
   });
 
   Hooks.on('updateCombat', async (combat: Combat) => {

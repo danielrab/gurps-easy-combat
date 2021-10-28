@@ -356,3 +356,11 @@ declare global {
   };
 }
 //#endregion
+type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[]
+  ? ElementType
+  : never;
+interface ChooserData<T extends string[]> {
+  items: Record<ArrayElement<T>, string | number>[];
+  headers: T;
+  id: string;
+}

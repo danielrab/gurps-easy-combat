@@ -1,0 +1,14 @@
+<table id={{id}}>
+  <tr class="header">
+    {{#each headers as |header|}}
+      <td>{{header}}</td>
+    {{/each}}
+  </tr>
+{{#each items as |item|}}
+  <tr class="clickable" index="{{@index}}">
+    {{#each ../headers as |header|}}
+      <td>{{get item header}}</td>
+    {{/each}}
+  </tr>
+{{/each}}
+</table>

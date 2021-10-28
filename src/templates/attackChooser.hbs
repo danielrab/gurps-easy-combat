@@ -1,45 +1,6 @@
 <div>
   <input id="is_moving" type="checkbox" {{#if data.isMoving}}checked{{/if}}><label for="is_moving">Move and attack</label>
-  <h2>Melee</h2>
-  <table>
-      <tr class="header">
-        <td>weapon</td>
-        <td>mode</td>
-        <td>level</td>
-        <td>damage</td>
-        <td>reach</td>
-      </tr>
-    {{#each melee as |attack|}}
-      <tr class="clickable attack melee" index="{{@index}}">
-        <td>{{attack.name}}</td>
-        <td>{{attack.mode}}</td>
-        <td>{{attack.level}}</td>
-        <td>{{attack.damage}}</td>
-        <td>{{attack.reach}}</td>
-      </tr>
-    {{/each}}
-  </table>
+  {{> choiceTable melee}}
   <h2>Ranged</h2>
-  <table>
-      <tr class="header">
-        <td>weapon</td>
-        <td>mode</td>
-        <td>level</td>
-        <td>damage</td>
-        <td>range</td>
-        <td>accuracy</td>
-        <td>bulk</td>
-      </tr>
-    {{#each ranged as |attack|}}
-      <tr class="clickable attack ranged" index="{{@index}}">
-        <td>{{attack.name}}</td>
-        <td>{{attack.mode}}</td>
-        <td>{{attack.level}}</td>
-        <td>{{attack.damage}}</td>
-        <td>{{attack.range}}</td>
-        <td>{{attack.acc}}</td>
-        <td>{{attack.bulk}}</td>
-      </tr>
-    {{/each}}
-  </table>
+  {{> choiceTable ranged}}
 </div>
