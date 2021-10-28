@@ -11,7 +11,13 @@
 - defense selector
 
 ## To Do list:
-- better attack chooser
+- all out attack/defense
+- atta/defense/damage modifiers
+- way to reopen maneuver selector
+- acrobatic dodge
+- handle OtFs that are already part of the weapon
 - automatic range penalty
-- readied weapon tracker
+- other maneuvers
 - rate of fire
+- customization
+- readied weapon tracker
