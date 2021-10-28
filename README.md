@@ -12,7 +12,7 @@
 
 ## To Do list:
 - all out attack/defense
-- atta/defense/damage modifiers
+- attack/defense/damage modifiers
 - acrobatic dodge
 - handle OtFs that are already part of the weapon
 - rate of fire
