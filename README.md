@@ -13,11 +13,11 @@
 ## To Do list:
 - all out attack/defense
 - atta/defense/damage modifiers
-- way to reopen maneuver selector
 - acrobatic dodge
 - handle OtFs that are already part of the weapon
+- rate of fire
+- way to reopen maneuver selector
 - automatic range penalty
 - other maneuvers
-- rate of fire
 - customization
 - readied weapon tracker
