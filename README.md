@@ -12,6 +12,7 @@
 
 ## To Do list:
 - all out attack/defense
+- postures
 - attack/defense/damage modifiers
 - multiple damage rolls
 - acrobatic dodge
