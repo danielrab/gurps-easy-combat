@@ -15,6 +15,10 @@
 
 ## To Do list:
 - all out defense
+- aim
+- evaluate
+- wait
+- ready
 - postures
 - attack/defense/damage modifiers
 - multiple damage rolls
@@ -23,6 +27,5 @@
 - rate of fire
 - way to reopen maneuver selector
 - automatic range penalty
-- other maneuvers
 - customization
 - readied weapon tracker
