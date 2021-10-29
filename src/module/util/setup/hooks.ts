@@ -23,13 +23,17 @@ export function registerHooks(): void {
 
   Hooks.on('updateCombat', async (combat: Combat) => {
     if (!combat.started) return;
-    const actor = combat.combatant.actor;
-    ensureDefined(actor, 'current combatant has no actor');
+    const tokenDocument = combat.combatant.token;
+    ensureDefined(tokenDocument, 'current combatant has no actor');
+    ensureDefined(tokenDocument.object, 'token document without token');
+    const token = tokenDocument.object as Token;
     ensureDefined(game.user, 'game not initialized');
+    const actor = token.actor;
+    ensureDefined(actor, 'token without actor');
     await ManeuverChooser.closeAll();
     await AttackChooser.closeAll();
     if (highestPriorityUsers(actor).includes(game.user) && game.settings.get(MODULE_NAME, 'maneuver-chooser-on-turn')) {
-      new ManeuverChooser(actor).render(true);
+      new ManeuverChooser(token).render(true);
     }
   });
 }

@@ -1,5 +1,7 @@
 <div>
-  <input id="is_moving" type="checkbox" {{#if data.isMoving}}checked{{/if}}><label for="is_moving">Move and attack</label>
+  <div>Choose attack (you must have a target selected)</div>
+  <div><input type="checkbox" id="keepOpen" {{#if data.keepOpen}}checked{{/if}}><label for="keepOpen">keep window open after attack</label></div>
+  <h2>Melee</h2>
   {{> choiceTable melee}}
   <h2>Ranged</h2>
   {{> choiceTable ranged}}

@@ -1,9 +1,10 @@
 import DefenseChooser from './applications/defenseChooser';
 import { Attack, GurpsRoll, MeleeAttack, Modifier, RangedAttack } from './types';
 import { applyModifiers } from './util/actions';
-import { ensureDefined, getBulk, getFullName, getTargets, setTargets } from './util/miscellaneous';
+import { MODULE_NAME } from './util/constants';
+import { ensureDefined, getBulk, getFullName, getManeuver, getTargets, setTargets } from './util/miscellaneous';
 
-async function rollAttack(actor: Actor, attack: Attack, type: 'melee' | 'ranged'): Promise<GurpsRoll> {
+export async function rollAttack(actor: Actor, attack: Attack, type: 'melee' | 'ranged'): Promise<GurpsRoll> {
   await GURPS.performAction(
     {
       isMelee: type === 'melee',
@@ -25,13 +26,16 @@ async function rollDamage(
   applyModifiers(modifiers);
   const oldTargets = getTargets(game.user);
   setTargets(game.user, [target]);
-  await GURPS.performAction({
+  Hooks.once('renderChatMessage', () => {
+    ensureDefined(game.user, 'game not initialized');
+    setTargets(game.user, oldTargets);
+  });
+  return GURPS.performAction({
     type: 'damage',
     formula: damage.formula,
     damagetype: damage.type,
     extdamagetype: damage.extra,
   });
-  setTargets(game.user, oldTargets);
 }
 
 export async function makeAttackInner(
@@ -53,7 +57,7 @@ export async function makeAttackInner(
   const roll = await rollAttack(attacker, attack, type);
   if (roll.failure) return;
   if (!roll.isCritSuccess) {
-    const defenceSuccess = await DefenseChooser.requestDefense(target.actor, modifiers.defense);
+    const defenceSuccess = await DefenseChooser.requestDefense(target, modifiers.defense);
     if (defenceSuccess) {
       return;
     }
@@ -65,7 +69,8 @@ export async function makeAttackInner(
 
 export function getMeleeModifiers(
   attack: MeleeAttack,
-  data: { maneuver: string; isMoving: boolean },
+  token: Token,
+  target: Token,
 ): {
   attack: Modifier[];
   defense: Modifier[];
@@ -76,15 +81,35 @@ export function getMeleeModifiers(
     defense: <Modifier[]>[],
     damage: <Modifier[]>[],
   };
-  if (data.isMoving) {
-    modifiers.attack.push({ mod: -4, desc: 'Move and Attack *Max:9' });
+  ensureDefined(token.actor, 'token without actor');
+  switch (getManeuver(token.actor)) {
+    case 'move_and_attack':
+      modifiers.attack.push({ mod: -4, desc: 'Move and Attack *Max:9' });
+      break;
+    case 'aoa_determined':
+      modifiers.attack.push({ mod: 4, desc: 'determined' });
+      break;
+    case 'aoa_strong':
+      modifiers.damage.push({ mod: 2, desc: 'strong' });
+  }
+  const lastFeint = <{ successMargin: number; targetId: string; round: number } | undefined>(
+    token.document.getFlag(MODULE_NAME, 'lastFeint')
+  );
+  if (
+    lastFeint &&
+    lastFeint.targetId === target.id &&
+    lastFeint.round - (game.combat?.round ?? 0) <= 1 &&
+    lastFeint.successMargin > 0
+  ) {
+    modifiers.defense.push({ mod: -lastFeint.successMargin, desc: 'feint' });
   }
   return modifiers;
 }
 
 export function getRangedModifiers(
   attack: RangedAttack,
-  data: { maneuver: string; isMoving: boolean },
+  token: Token,
+  target: Token,
 ): {
   attack: Modifier[];
   defense: Modifier[];
@@ -95,8 +120,14 @@ export function getRangedModifiers(
     defense: <Modifier[]>[],
     damage: <Modifier[]>[],
   };
-  if (data.isMoving) {
-    modifiers.attack.push({ mod: getBulk(attack), desc: 'Move and Attack *Max:9' });
+  ensureDefined(token.actor, 'token without actor');
+  switch (getManeuver(token.actor)) {
+    case 'move_and_attack':
+      modifiers.attack.push({ mod: getBulk(attack), desc: 'Move and Attack *Max:9' });
+      break;
+    case 'aoa_determined':
+      modifiers.attack.push({ mod: 1, desc: 'determined' });
+      break;
   }
   return modifiers;
 }

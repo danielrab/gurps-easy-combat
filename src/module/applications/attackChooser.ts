@@ -1,33 +1,37 @@
 import { getMeleeModifiers, getRangedModifiers, makeAttackInner } from '../attackWorkflow.js';
 import { TEMPLATES_FOLDER } from '../util/constants.js';
 import { getAttacks } from '../dataExtractor.js';
-import { ChooserData, MeleeAttack, RangedAttack } from '../types.js';
+import { ChooserData, MeleeAttack, PromiseFunctions, RangedAttack } from '../types.js';
 import BaseActorController from './abstract/BaseActorController.js';
-import { activateChooser, ensureDefined, getManeuver, getTargets } from '../util/miscellaneous.js';
+import { activateChooser, checkSingleTarget, ensureDefined, getTargets } from '../util/miscellaneous.js';
 
 interface AttackData {
-  isMoving: boolean;
+  meleeOnly?: boolean;
+  rangedOnly?: boolean;
+  keepOpen?: boolean;
 }
 
 export default class AttackChooser extends BaseActorController {
-  data: AttackData;
-  attacks: {
-    melee: MeleeAttack[];
-    ranged: RangedAttack[];
-  };
-
   static modifiersGetters = {
     melee: getMeleeModifiers,
     ranged: getRangedModifiers,
   };
 
-  constructor(actor: Actor, data: AttackData) {
-    super('AttackChooser', actor, {
-      title: `Attack Chooser - ${actor.name}`,
+  data: AttackData;
+  attacks: {
+    melee: MeleeAttack[];
+    ranged: RangedAttack[];
+  };
+  promiseFuncs: PromiseFunctions<void> | undefined;
+
+  constructor(token: Token, data: AttackData = {}, promiseFuncs?: PromiseFunctions<void>) {
+    super('AttackChooser', token, {
+      title: `Attack Chooser - ${token.name}`,
       template: `${TEMPLATES_FOLDER}/attackChooser.hbs`,
     });
     this.data = data;
     this.attacks = getAttacks(this.actor);
+    this.promiseFuncs = promiseFuncs;
   }
   getData(): {
     melee: ChooserData<['weapon', 'mode', 'level', 'damage', 'reach']>;
@@ -66,41 +70,33 @@ export default class AttackChooser extends BaseActorController {
     };
   }
   activateListeners(html: JQuery): void {
-    const applicationBox = html[0].getBoundingClientRect();
-    html.find('.easy-combat-tooltiptext').each((_, e) => {
-      const tooltipBox = e.getBoundingClientRect();
-      // check if the tooltip clips the bottom of the dialog and move it up if needed
-      if (tooltipBox.bottom > applicationBox.bottom) {
-        $(e).css({ top: applicationBox.bottom - tooltipBox.bottom }); // the resulting number is negarive, moving the tooltip up
-      }
-    });
     activateChooser(html, 'melee_attacks', (index) => this.makeAttack('melee', index));
     activateChooser(html, 'ranged_attacks', (index) => this.makeAttack('ranged', index));
-    html.on('click', '#is_moving', (event) => {
-      this.data.isMoving = event.target.checked;
+    html.on('change', '#keepOpen', (event) => {
+      this.data.keepOpen = $(event.currentTarget).is(':checked');
     });
   }
 
-  makeAttack(mode: 'ranged' | 'melee', index: number): void {
+  async makeAttack(mode: 'ranged' | 'melee', index: number): Promise<void> {
     ensureDefined(game.user, 'game not initialized');
-    if (!this.checkTargets(game.user)) return;
+    if (!checkSingleTarget(game.user)) return;
+    const target = getTargets(game.user)[0];
+    ensureDefined(target.actor, 'target has no actor');
     const attack = getAttacks(this.actor)[mode][index];
-    const modifiers = AttackChooser.modifiersGetters[mode](attack as RangedAttack & MeleeAttack, {
-      maneuver: getManeuver(this.actor),
-      isMoving: this.data.isMoving,
-    });
-    makeAttackInner(this.actor, getTargets(game.user)[0], attack, mode, modifiers);
+    const modifiers = AttackChooser.modifiersGetters[mode](attack as RangedAttack & MeleeAttack, this.token, target);
+    if (!this.data.keepOpen) {
+      this.close();
+    }
+    await makeAttackInner(this.actor, target, attack, mode, modifiers);
+    if (this.promiseFuncs) {
+      this.promiseFuncs.resolve();
+    }
   }
 
-  checkTargets(user: User): boolean {
-    if (user.targets.size === 0) {
-      ui.notifications?.warn('you must select a target');
-      return false;
-    }
-    if (user.targets.size > 1) {
-      ui.notifications?.warn('you must select only one target');
-      return false;
-    }
-    return true;
+  static request(token: Token, data?: AttackData): Promise<void> {
+    const promise = new Promise<void>((resolve, reject) => {
+      new AttackChooser(token, data, { resolve, reject }).render(true);
+    });
+    return promise;
   }
 }

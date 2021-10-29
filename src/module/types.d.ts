@@ -304,6 +304,9 @@ declare global {
   interface Actor {
     replaceManeuver: (maneuver?: string) => Promise<void>;
   }
+  interface Token {
+    setManeuver: (maneuver?: string) => Promise<void>;
+  }
   interface DataConfig {
     Actor: ActorDataProperties;
   }
@@ -363,4 +366,9 @@ interface ChooserData<T extends string[]> {
   items: Record<ArrayElement<T>, string | number>[];
   headers: T;
   id: string;
+}
+
+interface PromiseFunctions<T> {
+  resolve(value: T | PromiseLike<T>): void;
+  reject(reason: string): void;
 }

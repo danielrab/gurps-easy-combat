@@ -11,6 +11,7 @@
 - defense selector
 
 ## To Do list:
+- make sure game.actors.get is never used
 - all out attack/defense
 - postures
 - attack/defense/damage modifiers

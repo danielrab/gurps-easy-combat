@@ -1,8 +1,16 @@
-import { TEMPLATES_FOLDER } from '../util/constants';
+import { allOutAttackManeuvers, TEMPLATES_FOLDER } from '../util/constants';
 import { getBlocks, getDodge, getParries } from '../dataExtractor';
 import BaseActorController from './abstract/BaseActorController';
-import { highestPriorityUsers, isDefined, smartRace } from '../util/miscellaneous';
+import {
+  ensureDefined,
+  getManeuver,
+  getToken,
+  highestPriorityUsers,
+  isDefined,
+  smartRace,
+} from '../util/miscellaneous';
 import { Modifier } from '../types';
+import { applyModifiers } from '../util/actions';
 
 interface DefenseData {
   resolve(value: boolean | PromiseLike<boolean>): void;
@@ -13,9 +21,9 @@ interface DefenseData {
 export default class DefenseChooser extends BaseActorController {
   data: DefenseData;
 
-  constructor(actor: Actor, data: DefenseData) {
-    super('DefenseChooser', actor, {
-      title: `Defense Chooser - ${actor.name}`,
+  constructor(token: Token, data: DefenseData) {
+    super('DefenseChooser', token, {
+      title: `Defense Chooser - ${token.name}`,
       template: `${TEMPLATES_FOLDER}/defenseChooser.hbs`,
     });
     this.data = data;
@@ -29,6 +37,7 @@ export default class DefenseChooser extends BaseActorController {
   }
   activateListeners(html: JQuery): void {
     html.on('click', '#dodge', () => {
+      applyModifiers(this.data.modifiers);
       const result = GURPS.performAction(
         {
           orig: 'Dodge',
@@ -38,9 +47,10 @@ export default class DefenseChooser extends BaseActorController {
         this.actor,
       );
       this.data.resolve(result);
-      this.close();
+      this.closeForEveryone();
     });
     html.on('click', '.parryRow', (event) => {
+      applyModifiers(this.data.modifiers);
       const weapon = $(event.currentTarget).attr('weapon');
       if (!weapon) {
         ui.notifications?.error('no weapon attribute on clicked element');
@@ -55,9 +65,10 @@ export default class DefenseChooser extends BaseActorController {
         this.actor,
       );
       this.data.resolve(result);
-      this.close();
+      this.closeForEveryone();
     });
     html.on('click', '.blockRow', (event) => {
+      applyModifiers(this.data.modifiers);
       const weapon = $(event.currentTarget).attr('weapon');
       if (!weapon) {
         ui.notifications?.error('no weapon attribute on clicked element');
@@ -72,36 +83,35 @@ export default class DefenseChooser extends BaseActorController {
         this.actor,
       );
       this.data.resolve(result);
-      this.close();
+      this.closeForEveryone();
     });
   }
-  static async attemptDefense(actorId: string, modifiers: Modifier[]): Promise<boolean> {
-    const actor = game.actors?.get(actorId);
-    if (!actor) {
-      throw new Error(`can't find actor with id ${actorId}`);
+  static async attemptDefense(sceneId: string, tokenId: string, modifiers: Modifier[]): Promise<boolean> {
+    const token = getToken(sceneId, tokenId);
+    const actor = token.actor;
+    ensureDefined(actor, 'token without actor');
+    if (allOutAttackManeuvers.includes(getManeuver(actor))) {
+      ChatMessage.create({ content: `${actor.name} can't defend because he is using all out attack` });
+      return false;
     }
     const promise = new Promise<boolean>((resolve, reject) => {
-      const instance = new DefenseChooser(actor, { resolve, reject, modifiers });
+      const instance = new DefenseChooser(token, { resolve, reject, modifiers });
       instance.render(true);
     });
-    console.log(promise);
     return promise;
   }
-  static async requestDefense(actor: Actor, modifiers: Modifier[]): Promise<boolean> {
+  static async requestDefense(token: Token, modifiers: Modifier[]): Promise<boolean> {
+    const actor = token.actor;
+    ensureDefined(actor, 'token has no actor');
     const users = highestPriorityUsers(actor);
     const result = await smartRace(
       users
         .filter((user) => actor.testUserPermission(user, 'OWNER'))
         .map(async (user) => {
-          if (!user.id) {
-            ui.notifications?.error('user without id');
-            throw new Error('user without id');
-          }
-          if (!actor.id) {
-            ui.notifications?.error('target without id');
-            throw new Error('target without id');
-          }
-          return EasyCombat.socket.executeAsUser('attemptDefense', user.id, actor.id, modifiers);
+          ensureDefined(user.id, 'user without id');
+          ensureDefined(token.id, 'token without id');
+          ensureDefined(token.scene.id, 'scene without id');
+          return EasyCombat.socket.executeAsUser('attemptDefense', user.id, token.scene.id, token.id, modifiers);
         }),
       { allowRejects: false, default: false, filter: isDefined },
     );

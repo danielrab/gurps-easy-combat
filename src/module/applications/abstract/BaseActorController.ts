@@ -1,16 +1,18 @@
-export default class BaseActorController extends Application {
-  actor: Actor;
+import { ensureDefined } from '../../util/miscellaneous';
 
+export default class BaseActorController extends Application {
   static apps = new Map<string, BaseActorController>();
 
-  constructor(appName: string, actor: Actor, options: Partial<Application.Options>) {
-    const id = `${appName}-${actor.id}`;
+  token: Token;
+  actor: Actor;
+
+  constructor(appName: string, token: Token, options: Partial<Application.Options>) {
+    const id = `${appName}-${token.id}`;
     super(mergeObject(Application.defaultOptions, { resizable: true, width: 600, id, ...options }));
-    this.actor = actor;
-    if (!this.actor) {
-      throw new Error('no actor');
-    }
+    this.token = token;
     BaseActorController.apps.set(id, this);
+    ensureDefined(token.actor, 'token has no actor');
+    this.actor = token.actor;
   }
 
   async close(options?: Application.CloseOptions): Promise<void> {

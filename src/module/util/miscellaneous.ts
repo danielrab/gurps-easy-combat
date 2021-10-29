@@ -79,7 +79,7 @@ export function setTargets(user: User, targets: Token[]): void {
 }
 
 export function activateChooser(html: JQuery, id: string, callback: (index: number) => void): void {
-  html.on('click', `#${id} tr`, (event) => {
+  html.on('click', `#${id} tr.clickable`, (event) => {
     const element = $(event.currentTarget);
     const indexString = element.attr('index');
     if (!indexString) {
@@ -102,7 +102,7 @@ export function getBulk(attack: RangedAttack): number {
 }
 
 export function getManeuver(actor: Actor): string {
-  const maneuversEffects = Maneuvers.getActiveEffectManeuvers(actor.temporaryEffects);
+  const maneuversEffects = Maneuvers.getActiveEffectManeuvers(actor.effects);
   if (!maneuversEffects || maneuversEffects.length === 0) {
     ui.notifications?.error('no maneuver found');
     console.error(new Error('no maneuver found'));
@@ -114,4 +114,26 @@ export function getManeuver(actor: Actor): string {
   }
   const maneuver = maneuversEffects[0].data.flags.gurps.name;
   return maneuver;
+}
+
+export function checkSingleTarget(user: User): boolean {
+  if (user.targets.size === 0) {
+    ui.notifications?.warn('you must select a target');
+    return false;
+  }
+  if (user.targets.size > 1) {
+    ui.notifications?.warn('you must select only one target');
+    return false;
+  }
+  return true;
+}
+
+export function getToken(sceneId: string, tokenId: string): Token {
+  const scene = game.scenes?.get(sceneId);
+  ensureDefined(scene, `can't finds scene with id ${sceneId}`);
+  const tokenDocument = scene.tokens.get(tokenId);
+  ensureDefined(tokenDocument, `can't find token document with id ${tokenId} on scene with id ${sceneId}`);
+  const token = tokenDocument.object as Token;
+  ensureDefined(token, `token document with id ${tokenId} on scene with id ${sceneId} doesn't have object attached`);
+  return token;
 }
