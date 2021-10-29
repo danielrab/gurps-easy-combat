@@ -50,7 +50,7 @@ export default class Feint extends BaseActorController {
         successMargin = 0;
       } else {
         ChatMessage.create({
-          content: `the feint was successfull\nopponent gets [-${successMargin} to defense from fient]`,
+          content: `the feint was successful\nopponent gets [-${successMargin} to defense from feint]`,
         });
       }
       this.token.document.setFlag(MODULE_NAME, 'lastFeint', {

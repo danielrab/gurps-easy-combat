@@ -123,7 +123,7 @@ export function getRangedModifiers(
   ensureDefined(token.actor, 'token without actor');
   switch (getManeuver(token.actor)) {
     case 'move_and_attack':
-      modifiers.attack.push({ mod: getBulk(attack), desc: 'Move and Attack *Max:9' });
+      modifiers.attack.push({ mod: getBulk(attack), desc: 'Move and Attack' });
       break;
     case 'aoa_determined':
       modifiers.attack.push({ mod: 1, desc: 'determined' });
