@@ -9,10 +9,12 @@
 - maneuver selector
 - attack selector
 - defense selector
+### last release:
+- all out attack
+- feint
 
 ## To Do list:
-- make sure game.actors.get is never used
-- all out attack/defense
+- all out defense
 - postures
 - attack/defense/damage modifiers
 - multiple damage rolls
