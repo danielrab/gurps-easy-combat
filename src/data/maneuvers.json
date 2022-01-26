@@ -1,0 +1,93 @@
+[
+  {
+    "key": "do_nothing",
+    "tooltip": "Take no action but recover from stun",
+    "page": "B:364",
+    "name": "Do Nothing",
+    "callback": "endTurn"
+  },
+  {
+    "key": "move",
+    "tooltip": "Do nothing but move",
+    "page": "B:364",
+    "name": "Move",
+    "callback": null
+  },
+  {
+    "key": "change_posture",
+    "tooltip": "Stand up, sit down, etc.",
+    "page": "B:364",
+    "name": "Change Posture",
+    "callback": null
+  },
+  {
+    "key": "aim",
+    "tooltip": "Aim a ranged weapon to get its Accuracy bonus",
+    "page": "B:364",
+    "name": "Aim",
+    "callback": null
+  },
+  {
+    "key": "evaluate",
+    "tooltip": "Study a foe prior to a melee attack",
+    "page": "B:364",
+    "name": "Evaluate",
+    "callback": null
+  },
+  {
+    "key": "attack",
+    "tooltip": "unarmed or with a weapon",
+    "page": "B:365",
+    "name": "Attack",
+    "callback": null
+  },
+  {
+    "key": "move_and_attack",
+    "tooltip": "Move and attack at a penalty",
+    "page": "B:365",
+    "name": "Move and Attack",
+    "callback": null
+  },
+  {
+    "key": "feint",
+    "tooltip": "Fake a melee attack",
+    "page": "B:365",
+    "name": "Feint",
+    "callback": null
+  },
+  {
+    "key": "allout_attack",
+    "tooltip": "Attack at a bonus or multiple times",
+    "page": "B:365",
+    "name": "All-out Attack",
+    "callback": null
+  },
+  {
+    "key": "allout_defense",
+    "tooltip": "Increased or double defense",
+    "page": "B:366",
+    "name": "All-out Defense",
+    "callback": null
+  },
+  {
+    "key": "ready",
+    "tooltip": "Prepare a weapon or other item",
+    "page": "B:366",
+    "name": "Ready",
+    "callback": null
+  },
+  {
+    "key": "concentrate",
+    "tooltip": "Focus on a mental task",
+    "page": "B:366",
+    "name": "Concentrate",
+    "callback": null
+  },
+  {
+    "key": "wait",
+    "tooltip": "Hold yourself in readiness to act",
+    "page": "B:366",
+    "name": "Wait",
+    "callback": null
+  }
+]

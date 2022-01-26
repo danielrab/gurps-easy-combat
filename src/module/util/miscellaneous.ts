@@ -1,7 +1,5 @@
-import { Attack, RangedAttack } from '../types';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import Maneuvers from '/systems/gurps/module/actor/maneuver.js';
+import { DATA_FOLDER } from '../data/constants';
+import { Attack, RangedAttack } from '../types/types';
 
 export async function smartRace<S extends T, T>(
   promises: Promise<T>[],
@@ -102,7 +100,7 @@ export function getBulk(attack: RangedAttack): number {
 }
 
 export function getManeuver(actor: Actor): string {
-  const maneuversEffects = Maneuvers.getActiveEffectManeuvers(actor.effects);
+  const maneuversEffects = GURPS.Maneuvers.getActiveEffectManeuvers(actor.effects);
   if (!maneuversEffects || maneuversEffects.length === 0) {
     ui.notifications?.error('no maneuver found');
     console.error(new Error('no maneuver found'));
@@ -136,4 +134,10 @@ export function getToken(sceneId: string, tokenId: string): Token {
   const token = tokenDocument.object as Token;
   ensureDefined(token, `token document with id ${tokenId} on scene with id ${sceneId} doesn't have object attached`);
   return token;
+}
+
+export async function readData(jsonName: string) {
+  const file = await fetch(`${DATA_FOLDER}/${jsonName}`);
+  const text = await file.text();
+  return JSON.parse(text);
 }

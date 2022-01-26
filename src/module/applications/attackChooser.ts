@@ -1,9 +1,12 @@
-import { getMeleeModifiers, getRangedModifiers, makeAttackInner } from '../attackWorkflow.js';
-import { TEMPLATES_FOLDER } from '../util/constants.js';
+import { rollAttack, rollDamage } from '../attackWorkflow.js';
+import { TEMPLATES_FOLDER } from '../data/constants.js';
 import { getAttacks } from '../dataExtractor.js';
-import { ChooserData, MeleeAttack, PromiseFunctions, RangedAttack } from '../types.js';
+import { ChooserData, MeleeAttack, Modifier, PromiseFunctions, RangedAttack } from '../types/types.js';
 import BaseActorController from './abstract/BaseActorController.js';
 import { activateChooser, checkSingleTarget, ensureDefined, getTargets } from '../util/miscellaneous.js';
+import { applyModifiers } from '../util/actions.js';
+import DefenseChooser from './defenseChooser.js';
+import { getMeleeModifiers, getRangedModifiers } from '../util/modifiers.js';
 
 interface AttackData {
   meleeOnly?: boolean;
@@ -87,7 +90,22 @@ export default class AttackChooser extends BaseActorController {
     if (!this.data.keepOpen) {
       this.close();
     }
-    await makeAttackInner(this.actor, target, attack, mode, modifiers);
+    if (!target.actor) {
+      ui.notifications?.error('target has no actor');
+      return;
+    }
+    applyModifiers(modifiers.attack);
+    const roll = await rollAttack(this.actor, attack, mode);
+    if (roll.failure) return;
+    if (!roll.isCritSuccess) {
+      const defenceSuccess = await DefenseChooser.requestDefense(target, modifiers.defense);
+      if (defenceSuccess) {
+        return;
+      }
+    }
+    const damageParts = attack.damage.split(' ');
+    const damage = { formula: damageParts[0], type: damageParts[1], extra: damageParts[2] };
+    await rollDamage(damage, target, modifiers.damage);
     if (this.promiseFuncs) {
       this.promiseFuncs.resolve();
     }
