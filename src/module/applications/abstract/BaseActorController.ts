@@ -1,3 +1,4 @@
+import ActorHandler from '../../handlers/ActorHandler';
 import { ensureDefined } from '../../util/miscellaneous';
 
 export default class BaseActorController extends Application {
@@ -5,6 +6,7 @@ export default class BaseActorController extends Application {
 
   token: Token;
   actor: Actor;
+  actorHandler: ActorHandler;
 
   constructor(appName: string, token: Token, options: Partial<Application.Options>) {
     const id = `${appName}-${token.id}`;
@@ -13,6 +15,7 @@ export default class BaseActorController extends Application {
     BaseActorController.apps.set(id, this);
     ensureDefined(token.actor, 'token has no actor');
     this.actor = token.actor;
+    this.actorHandler = new ActorHandler(this.actor);
   }
 
   async close(options?: Application.CloseOptions): Promise<void> {

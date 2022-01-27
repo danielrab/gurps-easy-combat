@@ -1,7 +1,7 @@
-import { rollAttack } from '../../attackWorkflow';
 import { getAttacks } from '../../dataExtractor';
-import { ChooserData, PromiseFunctions } from '../../types';
-import { MODULE_NAME, TEMPLATES_FOLDER } from '../../util/constants';
+import { ChooserData, PromiseFunctions } from '../../types/types';
+import { rollMeleeAttack } from '../../util/actions';
+import { MODULE_NAME, TEMPLATES_FOLDER } from '../../data/constants';
 import { activateChooser, ensureDefined, checkSingleTarget, getTargets } from '../../util/miscellaneous';
 import BaseActorController from '../abstract/BaseActorController';
 import FeintDefense from '../feintDefense';
@@ -38,7 +38,7 @@ export default class Feint extends BaseActorController {
         return;
       }
       const attack = getAttacks(this.actor).melee[index];
-      const attackResult = await rollAttack(this.actor, attack, 'melee');
+      const attackResult = await rollMeleeAttack(attack, this.actor);
       if (attackResult.failure) {
         this.close();
         return;

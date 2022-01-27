@@ -1,7 +1,7 @@
-import { rollAttack } from '../attackWorkflow';
 import { getAttacks } from '../dataExtractor';
-import { ChooserData, GurpsRoll, PromiseFunctions } from '../types';
-import { TEMPLATES_FOLDER } from '../util/constants';
+import { ChooserData, GurpsRoll, PromiseFunctions } from '../types/types';
+import { rollMeleeAttack } from '../util/actions';
+import { TEMPLATES_FOLDER } from '../data/constants';
 import {
   activateChooser,
   ensureDefined,
@@ -47,7 +47,7 @@ export default class FeintDefense extends BaseActorController {
       ensureDefined(game.user, 'game not initialized');
       if (!checkSingleTarget(game.user)) return;
       const attack = getAttacks(this.actor).melee[index];
-      const attackResult = rollAttack(this.actor, attack, 'melee');
+      const attackResult = rollMeleeAttack(attack, this.actor);
       this.resolve(attackResult);
       this.closeForEveryone();
     });
