@@ -1,4 +1,4 @@
-import { TEMPLATES_FOLDER } from '../../data/constants';
+import { TEMPLATES_FOLDER } from '../constants';
 
 export function registerHelpers(): void {
   Handlebars.registerHelper('gurpslink', GURPS.gurpslink);

@@ -1,7 +1,7 @@
 import BaseActorController from '../../applications/abstract/BaseActorController.js';
 import DefenseChooser from '../../applications/defenseChooser.js';
 import FeintDefense from '../../applications/feintDefense.js';
-import { MODULE_NAME } from '../../data/constants.js';
+import { MODULE_NAME } from '../constants.js';
 
 const functionsToRegister = {
   attemptDefense: DefenseChooser.attemptDefense,

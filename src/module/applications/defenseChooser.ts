@@ -1,4 +1,4 @@
-import { TEMPLATES_FOLDER } from '../data/constants';
+import { allOutAttackManeuvers, TEMPLATES_FOLDER } from '../util/constants';
 import { getBlocks, getDodge, getParries } from '../dataExtractor';
 import BaseActorController from './abstract/BaseActorController';
 import {
@@ -9,10 +9,8 @@ import {
   isDefined,
   smartRace,
 } from '../util/miscellaneous';
-import { Modifier } from '../types/types';
+import { Modifier } from '../types';
 import { applyModifiers } from '../util/actions';
-import { allOutAttackManeuvers } from '../data/maneuvers';
-import ActorHandler from '../handlers/ActorHandler';
 
 interface DefenseData {
   resolve(value: boolean | PromiseLike<boolean>): void;
@@ -22,7 +20,6 @@ interface DefenseData {
 
 export default class DefenseChooser extends BaseActorController {
   data: DefenseData;
-  actorHandler: ActorHandler;
 
   constructor(token: Token, data: DefenseData) {
     super('DefenseChooser', token, {
@@ -30,7 +27,6 @@ export default class DefenseChooser extends BaseActorController {
       template: `${TEMPLATES_FOLDER}/defenseChooser.hbs`,
     });
     this.data = data;
-    this.actorHandler = new ActorHandler(this.actor);
   }
   getData(): { dodge: number; parry: Record<string, number>; block: Record<string, number> } {
     return { dodge: getDodge(this.actor), parry: getParries(this.actor), block: getBlocks(this.actor) };
@@ -40,10 +36,17 @@ export default class DefenseChooser extends BaseActorController {
     this.data.reject('closed');
   }
   activateListeners(html: JQuery): void {
-    html.on('click', '#dodge', async () => {
+    html.on('click', '#dodge', () => {
       applyModifiers(this.data.modifiers);
-      const result = await this.actorHandler.dodge.do();
-      this.data.resolve(!result.failure);
+      const result = GURPS.performAction(
+        {
+          orig: 'Dodge',
+          path: 'currentdodge',
+          type: 'attribute',
+        },
+        this.actor,
+      );
+      this.data.resolve(result);
       this.closeForEveryone();
     });
     html.on('click', '.parryRow', (event) => {

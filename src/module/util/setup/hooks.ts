@@ -1,6 +1,6 @@
 import { registerSettings } from './settings.js';
 import { registerHelpers, registerPartials } from './handlebars.js';
-import { MODULE_NAME } from '../../data/constants.js';
+import { MODULE_NAME } from '../constants.js';
 import ManeuverChooser from '../../applications/maneuverChooser.js';
 import { ensureDefined, highestPriorityUsers } from '../miscellaneous.js';
 import AttackChooser from '../../applications/attackChooser.js';
@@ -14,7 +14,7 @@ export function registerHooks(): void {
     console.log('gurps-easy-combat | Initializing gurps-easy-combat');
 
     // Register custom module settings
-    await registerSettings();
+    registerSettings();
 
     // register Handlebars helpers and partials
     registerHelpers();
